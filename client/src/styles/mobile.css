@@ -1,0 +1,75 @@
+/* Mobile-First Button Optimizations */
+.mobile-tap-target {
+  min-height: 44px;
+  min-width: 44px;
+  touch-action: manipulation;
+}
+
+@media (max-width: 640px) {
+  /* Ensure all buttons are properly sized for mobile */
+  .btn-mobile-full {
+    width: 100%;
+    min-height: 48px;
+    font-size: 16px;
+  }
+  
+  /* Improve touch targets */
+  button, [role="button"], input[type="submit"], input[type="button"] {
+    min-height: 44px;
+    touch-action: manipulation;
+  }
+  
+  /* Better spacing for mobile forms */
+  .form-container {
+    padding: 1rem;
+  }
+  
+  /* Responsive button groups */
+  .button-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .button-group > * {
+    width: 100%;
+  }
+}
+
+@media (min-width: 641px) {
+  .button-group {
+    flex-direction: row;
+    gap: 1rem;
+  }
+  
+  .button-group > * {
+    width: auto;
+    flex: 1;
+  }
+}
+
+/* Loading states */
+.btn-loading {
+  position: relative;
+  color: transparent;
+}
+
+.btn-loading::after {
+  content: "";
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border: 2px solid currentColor;
+  border-radius: 50%;
+  border-right-color: transparent;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}

@@ -1,6 +1,7 @@
 import express, { type Request, Response, NextFunction } from "express";
 import rateLimit from "express-rate-limit";
 import helmet from "helmet";
+import path from "path";
 import { registerRoutes } from "./routes";
 
 // Simple logging function
@@ -120,14 +121,13 @@ app.use((req, res, next) => {
     await setupVite(app, server);
   } else {
     // Simple static file serving for production - no Vite needed
-    const path = require("path");
     const distPath = path.resolve("dist");
 
     // Serve static files from dist
     app.use(express.static(distPath));
 
     // Catch-all handler for SPA routing
-    app.get("*", (req, res) => {
+    app.get("*", (_req, res) => {
       res.sendFile(path.join(distPath, "index.html"));
     });
   }

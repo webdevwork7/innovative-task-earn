@@ -121,7 +121,7 @@ app.use((req, res, next) => {
     await setupVite(app, server);
   } else {
     // Simple static file serving for production - no Vite needed
-    const distPath = path.resolve("dist");
+    const distPath = path.resolve("dist/public");
 
     // Serve static files from dist
     app.use(express.static(distPath));

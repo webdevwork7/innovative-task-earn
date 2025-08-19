@@ -1,7 +1,6 @@
 import express, { type Request, Response, NextFunction } from "express";
 import rateLimit from "express-rate-limit";
 import helmet from "helmet";
-import path from "path";
 import { registerRoutes } from "./routes";
 
 // Simple logging function
@@ -113,24 +112,12 @@ app.use((req, res, next) => {
     throw err;
   });
 
-  // importantly only setup vite in development and after
-  // setting up all the other routes so the catch-all route
-  // doesn't interfere with the other routes
+  // Only setup vite in development for local development
   if (app.get("env") === "development") {
     const { setupVite } = await import("./vite");
     await setupVite(app, server);
-  } else {
-    // Simple static file serving for production - no Vite needed
-    const distPath = path.resolve("dist/public");
-
-    // Serve static files from dist
-    app.use(express.static(distPath));
-
-    // Catch-all handler for SPA routing
-    app.get("*", (_req, res) => {
-      res.sendFile(path.join(distPath, "index.html"));
-    });
   }
+  // In production, frontend is deployed separately - no static file serving needed
 
   // ALWAYS serve the app on the port specified in the environment variable PORT
   // Other ports are firewalled. Default to 5000 if not specified.

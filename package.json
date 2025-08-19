@@ -6,10 +6,13 @@
   "scripts": {
     "dev": "NODE_ENV=development tsx server/index.ts",
     "build": "esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist",
+    "build-simple": "tsc && cp -r server dist/",
     "start": "cross-env NODE_ENV=production node dist/index.js",
+    "start-simple": "cross-env NODE_ENV=production tsx server/index.ts",
     "check": "tsc",
     "db:push": "drizzle-kit push",
-    "render-build": "npm run build && npm run db:push"
+    "render-build": "npm run build && npm run db:push",
+    "render-simple": "npm run db:push && npm run start-simple"
   },
   "dependencies": {
     "@google-cloud/storage": "^7.16.0",
@@ -97,7 +100,9 @@
     "wouter": "^3.3.5",
     "ws": "^8.18.0",
     "zod": "^3.24.2",
-    "zod-validation-error": "^3.4.0"
+    "zod-validation-error": "^3.4.0",
+    "esbuild": "^0.25.0",
+    "tsx": "^4.19.1"
   },
   "devDependencies": {
     "@replit/vite-plugin-cartographer": "^0.2.8",
@@ -117,10 +122,8 @@
     "autoprefixer": "^10.4.20",
     "cross-env": "^7.0.3",
     "drizzle-kit": "^0.30.4",
-    "esbuild": "^0.25.0",
     "postcss": "^8.4.47",
     "tailwindcss": "^3.4.17",
-    "tsx": "^4.19.1",
     "typescript": "5.6.3",
     "vite": "^5.4.19"
   },

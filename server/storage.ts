@@ -54,7 +54,7 @@ class MemoryStorage {
       email: "demo@innovativetaskearn.online",
       firstName: "Demo",
       lastName: "User",
-      phone: "8888888888",
+      phoneNumber: "8888888888",
       role: "user",
       status: "active",
       balance: 1250.5, // Includes ₹1000 signup bonus + earnings
@@ -152,7 +152,7 @@ class MemoryStorage {
       email: "john.doe@innovativetaskearn.online",
       firstName: "John",
       lastName: "Doe",
-      phone: "9876543210",
+      phoneNumber: "9876543210",
       role: "user",
       status: "active",
       balance: 4500.75,
@@ -284,7 +284,7 @@ class MemoryStorage {
       email: "amit.singh@innovativetaskearn.online",
       firstName: "Amit",
       lastName: "Singh",
-      phone: "4321098765",
+      phoneNumber: "4321098765",
       role: "user",
       status: "active",
       balance: 1000, // Only signup bonus
@@ -435,7 +435,7 @@ class MemoryStorage {
       email: userData.email!,
       firstName: userData.firstName!,
       lastName: userData.lastName!,
-      phone: userData.phone!,
+      phoneNumber: userData.phoneNumber || userData.phone!, // Support both field names
       role: "user",
       status: "active",
       balance: 1000, // ₹1000 signup bonus

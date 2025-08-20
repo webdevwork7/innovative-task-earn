@@ -5,15 +5,15 @@ export interface User {
   email: string;
   firstName: string;
   lastName: string;
-  phone: string;
-  role: 'user' | 'admin';
-  status: 'active' | 'suspended';
+  phoneNumber: string; // Fixed: use phoneNumber to match database
+  role: "user" | "admin";
+  status: "active" | "suspended";
   balance: number;
   referralCode: string;
   referredBy?: string;
-  kycStatus: 'pending' | 'submitted' | 'verified' | 'rejected';
+  kycStatus: "pending" | "submitted" | "verified" | "rejected";
   kycFeePaid: boolean;
-  verificationStatus: 'pending' | 'verified';
+  verificationStatus: "pending" | "verified";
   dailyWorkHours?: number; // Hours worked today
   lastActiveTime?: Date; // Last activity timestamp
   workStartTime?: Date; // When user started working today
@@ -38,13 +38,13 @@ export interface Task {
   updatedAt: Date;
 }
 
-export type TaskCategory = 
-  | 'app_download'
-  | 'business_review'
-  | 'product_review'
-  | 'channel_subscribe'
-  | 'comment_like'
-  | 'youtube_video_see';
+export type TaskCategory =
+  | "app_download"
+  | "business_review"
+  | "product_review"
+  | "channel_subscribe"
+  | "comment_like"
+  | "youtube_video_see";
 
 export interface TaskCompletion {
   id: string;
@@ -52,7 +52,7 @@ export interface TaskCompletion {
   userId: string;
   proofUrl?: string;
   proofText?: string;
-  status: 'pending' | 'approved' | 'rejected';
+  status: "pending" | "approved" | "rejected";
   earnings: number;
   submittedAt: Date;
   reviewedAt?: Date;
@@ -64,7 +64,7 @@ export interface Earning {
   id: string;
   userId: string;
   amount: number;
-  type: 'task' | 'referral' | 'bonus';
+  type: "task" | "referral" | "bonus";
   description: string;
   taskCompletionId?: string;
   createdAt: Date;
@@ -74,9 +74,9 @@ export interface Payout {
   id: string;
   userId: string;
   amount: number;
-  method: 'upi' | 'bank_transfer';
+  method: "upi" | "bank_transfer";
   accountDetails: string;
-  status: 'pending' | 'processing' | 'completed' | 'failed';
+  status: "pending" | "processing" | "completed" | "failed";
   processedAt?: Date;
   transactionId?: string;
   createdAt: Date;
@@ -85,10 +85,10 @@ export interface Payout {
 export interface KYCDocument {
   id: string;
   userId: string;
-  documentType: 'aadhaar' | 'pan';
+  documentType: "aadhaar" | "pan";
   documentNumber: string;
   documentUrl: string;
-  status: 'pending' | 'verified' | 'rejected';
+  status: "pending" | "verified" | "rejected";
   verifiedAt?: Date;
   createdAt: Date;
 }
@@ -113,14 +113,14 @@ export interface FAQ {
 
 export interface Inquiry {
   id: string;
-  type: 'contact' | 'advertiser';
+  type: "contact" | "advertiser";
   name: string;
   email: string;
   phone?: string;
   company?: string;
   message: string;
   budget?: string;
-  status: 'new' | 'contacted' | 'resolved';
+  status: "new" | "contacted" | "resolved";
   createdAt: Date;
 }
 

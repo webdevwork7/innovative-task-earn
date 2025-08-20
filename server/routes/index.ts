@@ -185,7 +185,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         email: email.toLowerCase(),
         firstName: firstName,
         lastName: lastName,
-        phone: phone,
+        phoneNumber: phone, // Fixed: use phoneNumber instead of phone
         balance: 1000,
       });
 

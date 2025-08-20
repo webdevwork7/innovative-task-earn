@@ -19,6 +19,39 @@ const app = express();
 // Set trust proxy for rate limiting
 app.set("trust proxy", 1);
 
+// CORS Configuration - Allow requests from Vercel frontend
+app.use((req, res, next) => {
+  const allowedOrigins = [
+    "https://innovative-task-earn.vercel.app",
+    "http://localhost:3000",
+    "http://localhost:5173",
+    "http://localhost:5000",
+  ];
+
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin as string)) {
+    res.setHeader("Access-Control-Allow-Origin", origin as string);
+  }
+
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET, POST, PUT, DELETE, OPTIONS"
+  );
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "Content-Type, Authorization, X-Requested-With"
+  );
+  res.setHeader("Access-Control-Allow-Credentials", "true");
+
+  // Handle preflight requests
+  if (req.method === "OPTIONS") {
+    res.status(200).end();
+    return;
+  }
+
+  next();
+});
+
 // Security middleware
 app.use(
   helmet({

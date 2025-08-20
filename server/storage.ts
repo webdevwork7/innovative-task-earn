@@ -692,10 +692,10 @@ export const storage = {
       const { users } = await import("@shared/schema");
       const bcrypt = await import("bcryptjs");
 
-      // Hash password if provided
-      if (userData.password) {
-        userData.password = await bcrypt.hash(userData.password, 10);
-      }
+      // Password is already hashed in routes/index.ts, don't hash again
+      // if (userData.password) {
+      //   userData.password = await bcrypt.hash(userData.password, 10);
+      // }
 
       // Set default values
       const userToCreate = {

@@ -1,5 +1,10 @@
 import { QueryClient, QueryFunction } from "@tanstack/react-query";
 
+// API Configuration
+const API_BASE_URL =
+  import.meta.env.VITE_API_URL ||
+  "https://innovative-task-earn-backend.onrender.com";
+
 async function throwIfResNotOk(res: Response) {
   if (!res.ok) {
     const text = (await res.text()) || res.statusText;
@@ -10,9 +15,12 @@ async function throwIfResNotOk(res: Response) {
 export async function apiRequest(
   method: string,
   url: string,
-  data?: unknown | undefined,
+  data?: unknown | undefined
 ): Promise<Response> {
-  const res = await fetch(url, {
+  // Convert relative URLs to absolute URLs using our backend
+  const fullUrl = url.startsWith("/") ? `${API_BASE_URL}${url}` : url;
+
+  const res = await fetch(fullUrl, {
     method,
     headers: data ? { "Content-Type": "application/json" } : {},
     body: data ? JSON.stringify(data) : undefined,
@@ -31,7 +39,7 @@ export const getQueryFn: <T>(options: {
   async ({ queryKey }) => {
     try {
       const url = queryKey.join("/") as string;
-      
+
       const res = await fetch(url, {
         credentials: "include",
       });

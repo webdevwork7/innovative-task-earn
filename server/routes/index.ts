@@ -171,37 +171,45 @@ export async function registerRoutes(app: Express): Promise<Server> {
       return res.status(400).json({ error: "Phone number must be 10 digits" });
     }
 
-    // In development mode, create user in memory storage
-    if (process.env.NODE_ENV === "development") {
-      // Check if email already exists (simulate for dev)
-      if (
-        email === "demo@innovativetaskearn.online" ||
-        email === "admin@innovativetaskearn.online"
-      ) {
+    try {
+      const { storage } = await import("../storage");
+
+      // Check if email already exists
+      const existingUser = await storage.getUserByEmail(email);
+      if (existingUser) {
         return res.status(400).json({ error: "Email already registered" });
       }
 
-      // Create new user ID and session
-      const newUserId = `user-${Date.now()}`;
-      (req.session as any).userId = newUserId;
-      (req.session as any).role = "user";
+      // Create new user with ₹1000 signup bonus
+      const newUser = await storage.createUser({
+        email: email.toLowerCase(),
+        firstName: firstName,
+        lastName: lastName,
+        phone: phone,
+        balance: 1000,
+      });
+
+      // Create session for immediate login
+      (req.session as any).userId = newUser.id;
+      (req.session as any).role = newUser.role;
 
       console.log("Signup successful with ₹1000 bonus for:", email);
       res.json({
         success: true,
         message: "Account created successfully with ₹1000 signup bonus!",
         user: {
-          id: newUserId,
-          email: email,
-          firstName: firstName,
-          lastName: lastName,
-          role: "user",
-          balance: 1000,
+          id: newUser.id,
+          email: newUser.email,
+          firstName: newUser.firstName,
+          lastName: newUser.lastName,
+          role: newUser.role,
+          balance: newUser.balance,
         },
         signupBonus: 1000,
       });
-    } else {
-      res.status(501).json({ error: "Signup not implemented in production" });
+    } catch (error) {
+      console.error("Signup error:", error);
+      res.status(500).json({ error: "Registration failed. Please try again." });
     }
   });
 
@@ -267,12 +275,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       } catch (error) {
         console.error("Reactivation payment initiation error:", error);
-        res
-          .status(500)
-          .json({
-            error:
-              "Failed to initiate payment. Please check Cashfree credentials.",
-          });
+        res.status(500).json({
+          error:
+            "Failed to initiate payment. Please check Cashfree credentials.",
+        });
       }
     }
   });

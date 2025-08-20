@@ -180,12 +180,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "Email already registered" });
       }
 
+      // Hash password before saving
+      const bcrypt = await import("bcryptjs");
+      const hashedPassword = await bcrypt.hash(password, 10);
+
       // Create new user with ₹1000 signup bonus
       const newUser = await storage.createUser({
         email: email.toLowerCase(),
         firstName: firstName,
         lastName: lastName,
         phoneNumber: phone, // Fixed: use phoneNumber instead of phone
+        password: hashedPassword, // FIXED: Add the hashed password!
         balance: 1000,
       });
 

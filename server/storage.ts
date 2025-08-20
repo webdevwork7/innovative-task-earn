@@ -604,29 +604,55 @@ const memoryStorage = new MemoryStorage();
 export const storage = {
   // Authentication operation
   async authenticateUser(email: string, password: string): Promise<any> {
+    console.log("🔍 AUTH DEBUG: Starting authentication for:", email);
+    console.log("🔍 AUTH DEBUG: isDevelopment:", isDevelopment);
+    console.log("🔍 AUTH DEBUG: db exists:", !!db);
+
     if (!db || isDevelopment) {
+      console.log("🔍 AUTH DEBUG: Using memory storage");
       return memoryStorage.authenticateUser(email, password);
     }
 
     // Production authentication with database
     try {
+      console.log("🔍 AUTH DEBUG: Using database authentication");
       const { users } = await import("@shared/schema");
       const { eq } = await import("drizzle-orm");
       const bcrypt = await import("bcryptjs");
 
+      console.log("🔍 AUTH DEBUG: Looking for user in database...");
       const [user] = await db
         .select()
         .from(users)
         .where(eq(users.email, email.toLowerCase()))
         .limit(1);
-      if (!user) return null;
 
+      console.log("🔍 AUTH DEBUG: User found:", !!user);
+      if (!user) {
+        console.log("🔍 AUTH DEBUG: No user found with email:", email);
+        return null;
+      }
+
+      console.log("🔍 AUTH DEBUG: User data:", {
+        id: user.id,
+        email: user.email,
+        hasPassword: !!user.password,
+        passwordLength: user.password?.length || 0,
+      });
+
+      console.log("🔍 AUTH DEBUG: Comparing passwords...");
       const isValid = await bcrypt.compare(password, user.password);
-      if (!isValid) return null;
+      console.log("🔍 AUTH DEBUG: Password valid:", isValid);
 
+      if (!isValid) {
+        console.log("🔍 AUTH DEBUG: Password comparison failed");
+        return null;
+      }
+
+      console.log("🔍 AUTH DEBUG: Authentication successful!");
       return user;
     } catch (error) {
-      console.error("Authentication error:", error);
+      console.error("🔍 AUTH DEBUG: Authentication error:", error);
       return null;
     }
   },

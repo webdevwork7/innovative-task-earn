@@ -7,6 +7,14 @@ import { pool } from "../db";
 const PgSession = connectPgSimple(session);
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Initialize admin user in database
+  try {
+    const { storage } = await import("../storage");
+    await storage.initializeAdminUser();
+  } catch (error) {
+    console.error("Failed to initialize admin user:", error);
+  }
+
   // Configure session middleware
   const sessionConfig: session.SessionOptions = {
     secret: process.env.SESSION_SECRET || "dev-secret-change-in-production",

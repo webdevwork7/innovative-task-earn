@@ -28,6 +28,7 @@ import TaskSubmission from './pages/TaskSubmission';
 import Support from './pages/Support';
 import Notifications from './pages/Notifications';
 import Reactivation from './pages/Reactivation';
+import NotFound from './pages/NotFound';
 
 // Admin Pages
 import AdminDashboard from './pages/admin/Dashboard';
@@ -182,17 +183,7 @@ export default function App() {
           </Route>
           
           {/* 404 Page */}
-          <Route>
-            <div className="flex items-center justify-center min-h-screen">
-              <div className="text-center">
-                <h1 className="text-4xl font-bold text-gray-900 mb-4">404</h1>
-                <p className="text-gray-600">Page not found</p>
-                <a href="/" className="text-blue-600 hover:text-blue-700 mt-4 inline-block">
-                  Go to Home
-                </a>
-              </div>
-            </div>
-          </Route>
+          <Route component={NotFound} />
         </Switch>
       </div>
       <Toaster />

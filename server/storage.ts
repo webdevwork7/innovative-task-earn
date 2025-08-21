@@ -3,8 +3,8 @@
 import { User, Task, TaskCompletion, Earning } from "../shared/types";
 import { hashPassword, generateReferralCode } from "./utils/auth";
 import { db } from "./db";
-import { users, tasks, taskCompletions, earnings } from "../database/schema";
 import { eq } from "drizzle-orm";
+import { users, tasks, taskCompletions, earnings } from "@shared/schema";
 
 // Memory storage for development mode
 class MemoryStorage {
@@ -28,7 +28,7 @@ class MemoryStorage {
       email: "admin@innovativetaskearn.online",
       firstName: "Admin",
       lastName: "User",
-      phone: "9999999999",
+      phoneNumber: "9999999999",
       role: "admin",
       status: "active",
       balance: 0,
@@ -76,11 +76,10 @@ class MemoryStorage {
       {
         id: "earn-signup-001",
         userId: userId,
-        type: "signup_bonus",
+        type: "bonus",
         amount: 1000,
         description: "Welcome Signup Bonus",
         createdAt: new Date("2025-01-01"),
-        status: "approved",
       },
     ]);
 
@@ -179,7 +178,7 @@ class MemoryStorage {
       email: "priya.sharma@innovativetaskearn.online",
       firstName: "Priya",
       lastName: "Sharma",
-      phone: "8765432109",
+      phoneNumber: "8765432109",
       role: "user",
       status: "active",
       balance: 1350,
@@ -204,7 +203,7 @@ class MemoryStorage {
       email: "alex.kumar@innovativetaskearn.online",
       firstName: "Alex",
       lastName: "Kumar",
-      phone: "7654321098",
+      phoneNumber: "7654321098",
       role: "user",
       status: "suspended",
       balance: 2100,
@@ -232,7 +231,7 @@ class MemoryStorage {
       email: "raj.patel@innovativetaskearn.online",
       firstName: "Raj",
       lastName: "Patel",
-      phone: "6543210987",
+      phoneNumber: "6543210987",
       role: "user",
       status: "active",
       balance: 1100,
@@ -257,7 +256,7 @@ class MemoryStorage {
       email: "sarah.wilson@innovativetaskearn.online",
       firstName: "Sarah",
       lastName: "Wilson",
-      phone: "5432109876",
+      phoneNumber: "5432109876",
       role: "user",
       status: "active",
       balance: 12500, // High balance
@@ -309,7 +308,7 @@ class MemoryStorage {
       email: "maya.gupta@innovativetaskearn.online",
       firstName: "Maya",
       lastName: "Gupta",
-      phone: "3210987654",
+      phoneNumber: "3210987654",
       role: "user",
       status: "suspended",
       balance: 750,
@@ -335,7 +334,7 @@ class MemoryStorage {
       email: "neha.reddy@innovativetaskearn.online",
       firstName: "Neha",
       lastName: "Reddy",
-      phone: "2109876543",
+      phoneNumber: "2109876543",
       role: "user",
       status: "active",
       balance: 1850,
@@ -357,11 +356,10 @@ class MemoryStorage {
       {
         id: "earn-v-001",
         userId: verifiedUserId,
-        type: "signup_bonus",
+        type: "bonus",
         amount: 1000,
         description: "Welcome Signup Bonus",
         createdAt: new Date("2024-12-01"),
-        status: "approved",
       },
       {
         id: "earn-v-002",
@@ -370,7 +368,6 @@ class MemoryStorage {
         amount: 250,
         description: "Completed App Download Tasks",
         createdAt: new Date("2025-01-10"),
-        status: "approved",
       },
       {
         id: "earn-v-003",
@@ -379,7 +376,6 @@ class MemoryStorage {
         amount: 245, // 5 referrals × ₹49
         description: "Referral Bonuses",
         createdAt: new Date("2025-01-12"),
-        status: "approved",
       },
     ]);
 
@@ -387,11 +383,10 @@ class MemoryStorage {
       {
         id: "earn-t-001",
         userId: topPerformerId,
-        type: "signup_bonus",
+        type: "bonus",
         amount: 1000,
         description: "Welcome Signup Bonus",
         createdAt: new Date("2024-08-01"),
-        status: "approved",
       },
       {
         id: "earn-t-002",
@@ -400,7 +395,6 @@ class MemoryStorage {
         amount: 8500,
         description: "Multiple Task Completions",
         createdAt: new Date("2025-01-14"),
-        status: "approved",
       },
       {
         id: "earn-t-003",
@@ -409,14 +403,13 @@ class MemoryStorage {
         amount: 980, // 20 referrals × ₹49
         description: "Referral Program Earnings",
         createdAt: new Date("2025-01-15"),
-        status: "approved",
       },
     ]);
   }
 
   // User methods
   async getUserByEmail(email: string): Promise<User | null> {
-    for (const user of this.users.values()) {
+    for (const user of Array.from(this.users.values())) {
       if (user.email.toLowerCase() === email.toLowerCase()) {
         return user;
       }
@@ -435,7 +428,7 @@ class MemoryStorage {
       email: userData.email!,
       firstName: userData.firstName!,
       lastName: userData.lastName!,
-      phoneNumber: userData.phoneNumber || userData.phone!, // Support both field names
+      phoneNumber: userData.phoneNumber || (userData as any).phone!, // Support both field names
       role: "user",
       status: "active",
       balance: 1000, // ₹1000 signup bonus
@@ -454,11 +447,10 @@ class MemoryStorage {
       {
         id: `earn-signup-${Date.now()}`,
         userId: id,
-        type: "signup_bonus",
+        type: "bonus",
         amount: 1000,
         description: "Welcome Signup Bonus",
         createdAt: new Date(),
-        status: "approved",
       },
     ]);
 
@@ -566,7 +558,7 @@ class MemoryStorage {
     const bcrypt = await import("bcryptjs");
 
     // Find user by email
-    for (const [userId, user] of this.users.entries()) {
+    for (const [userId, user] of Array.from(this.users.entries())) {
       if (user.email.toLowerCase() === email.toLowerCase()) {
         const storedPassword = this.passwords.get(userId);
         if (
@@ -589,7 +581,7 @@ class MemoryStorage {
 
   // Reset all users' daily work hours
   async resetAllUsersDailyHours(): Promise<void> {
-    for (const [id, user] of this.users) {
+    for (const [id, user] of Array.from(this.users)) {
       user.dailyWorkHours = 0;
       user.lastResetDate = new Date();
       this.users.set(id, user);
@@ -690,7 +682,6 @@ export const storage = {
     // Production user creation with database
     try {
       const { users } = await import("@shared/schema");
-      const bcrypt = await import("bcryptjs");
 
       // Password is already hashed in routes/index.ts, don't hash again
       // if (userData.password) {
@@ -718,6 +709,56 @@ export const storage = {
     } catch (error) {
       console.error("User creation error:", error);
       throw error;
+    }
+  },
+
+  // Initialize admin user in database if not exists
+  async initializeAdminUser(): Promise<void> {
+    if (!db || isDevelopment) return;
+
+    try {
+      const { users } = await import("@shared/schema");
+      const { eq } = await import("drizzle-orm");
+      const bcrypt = await import("bcryptjs");
+
+      // Check if admin exists
+      const [existingAdmin] = await db
+        .select()
+        .from(users)
+        .where(eq(users.email, "admin@innovativetaskearn.online"))
+        .limit(1);
+
+      if (!existingAdmin) {
+        console.log("🔧 Creating admin user in database...");
+
+        // Create admin user
+        const hashedPassword = await bcrypt.hash("admin123", 10);
+        const adminUser = {
+          id: "admin-001",
+          email: "admin@innovativetaskearn.online",
+          firstName: "Admin",
+          lastName: "User",
+          phoneNumber: "9999999999",
+          password: hashedPassword,
+          role: "admin",
+          status: "active",
+          balance: 0,
+          referralCode: "ADMIN001",
+          kycStatus: "verified",
+          kycFeePaid: true,
+          verificationStatus: "verified",
+          emailVerified: true,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        };
+
+        await db.insert(users).values(adminUser);
+        console.log("✅ Admin user created successfully!");
+      } else {
+        console.log("✅ Admin user already exists in database");
+      }
+    } catch (error) {
+      console.error("❌ Failed to initialize admin user:", error);
     }
   },
 
@@ -804,7 +845,7 @@ export const storage = {
     if (!db || isDevelopment) {
       return memoryStorage.getAllVerifiedUsers();
     }
-    return db.select().from(users).where(eq(users.kycStatus, "verified"));
+    return db.select().from(users).where(eq(users.kycStatus, "approved"));
   },
 
   async resetAllUsersDailyHours(): Promise<void> {
